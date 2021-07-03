@@ -1,7 +1,7 @@
 #!/bin/bash
 
-CLOUDFLARE_FILE_PATH=/etc/nginx/cloudflare
-ALLOW_FROM_CF=/etc/nginx/allow-only-from-cf
+CLOUDFLARE_FILE_PATH=/tmp/cloudflare
+ALLOW_FROM_CF=/tmp/allow-only-from-cf
 
 echo "#Cloudflare" > $CLOUDFLARE_FILE_PATH;
 echo "#Cloudflare" > $ALLOW_FROM_CF;
@@ -30,4 +30,6 @@ echo "real_ip_header CF-Connecting-IP;" >> $CLOUDFLARE_FILE_PATH;
 echo "deny all;" >> $ALLOW_FROM_CF;
 
 #test configuration and reload nginx
+sudo mv /tmp/allow-only-from-cf /etc/nginx/allow-only-from-cf
+sudo mv /tmp/cloudflare /etc/nginx/cloudflare
 sudo nginx -t && sudo systemctl reload nginx
