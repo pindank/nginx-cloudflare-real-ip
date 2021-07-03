@@ -33,7 +33,9 @@ for i in `curl https://www.cloudflare.com/ips-v4`; do
 done
 
 echo "" >> $CLOUDFLARE_FILE_PATH;
+echo "" >> $ALLOW_FROM_CF;
 echo "# - IPv6" >> $CLOUDFLARE_FILE_PATH;
+echo "# - IPv6" >> $ALLOW_FROM_CF;
 for i in `curl https://www.cloudflare.com/ips-v6`; do
     echo "set_real_ip_from $i;" >> $CLOUDFLARE_FILE_PATH;
     echo "allow $i;" >> $ALLOW_FROM_CF;
