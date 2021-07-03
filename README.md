@@ -10,6 +10,7 @@ Open "/etc/nginx/nginx.conf" file with your favorite text editor and just add th
 
 ```nginx
 include /etc/nginx/cloudflare;
+include /etc/nginx/allow-only-from-cf
 ```
 
 The bash script may run manually or can be scheduled to refresh the ip list of CloudFlare automatically.
@@ -17,26 +18,34 @@ The bash script may run manually or can be scheduled to refresh the ip list of C
 #!/bin/bash
 
 CLOUDFLARE_FILE_PATH=/etc/nginx/cloudflare
+ALLOW_FROM_CF=/etc/nginx/allow-only-from-cf
 
 echo "#Cloudflare" > $CLOUDFLARE_FILE_PATH;
+echo "#Cloudflare" > $ALLOW_FROM_CF;
 echo "" >> $CLOUDFLARE_FILE_PATH;
+echo "" >> $ALLOW_FROM_CF;
 
 echo "# - IPv4" >> $CLOUDFLARE_FILE_PATH;
+echo "# - IPv4" >> $ALLOW_FROM_CF;
 for i in `curl https://www.cloudflare.com/ips-v4`; do
     echo "set_real_ip_from $i;" >> $CLOUDFLARE_FILE_PATH;
+    echo "allow $i;" >> $ALLOW_FROM_CF;
 done
 
 echo "" >> $CLOUDFLARE_FILE_PATH;
 echo "# - IPv6" >> $CLOUDFLARE_FILE_PATH;
 for i in `curl https://www.cloudflare.com/ips-v6`; do
     echo "set_real_ip_from $i;" >> $CLOUDFLARE_FILE_PATH;
+    echo "allow $i;" >> $ALLOW_FROM_CF;
 done
 
 echo "" >> $CLOUDFLARE_FILE_PATH;
+echo "" >> $ALLOW_FROM_CF;
 echo "real_ip_header CF-Connecting-IP;" >> $CLOUDFLARE_FILE_PATH;
+echo "deny all;" >> $ALLOW_FROM_CF;
 
 #test configuration and reload nginx
-nginx -t && systemctl reload nginx
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ## Output
